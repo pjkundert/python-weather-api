@@ -3,19 +3,20 @@ Fetches weather reports from Yahoo! Weather
 """
 
 
-def get_weather(location_id):
+def get_weather(location_id, hl):
 	"""
-Fetches weather report from Yahoo!
+	Fetches weather report from Yahoo!
 
-Parameters 
-location_id: a zip code (10001); city name, state (weather=woodland,PA); city name, country (weather=london,england); or possibly others.
+	Parameters 
+	  location_id: a zip code (10001); city name, state (weather=woodland,PA); city name, country (weather=london,england); or possibly others.
+	  hl: the language parameter (language code)
 
-Returns:
-weather_data: a dictionary of weather data. See http://developer.yahoo.com/weather/
+	Returns:
+	  weather_data: a dictionary of weather data. See http://developer.yahoo.com/weather/
 	"""
 
-	WEATHER_URL = 'http://www.google.com/ig/api?weather=%s'
-	url = WEATHER_URL % (location_id)
+	WEATHER_URL = 'http://www.google.com/ig/api?weather=%s&hl=%s'
+	url = WEATHER_URL % (location_id, hl)
 	handler = urllib2.urlopen(url)
 	dom = minidom.parse(handler)	
 	handler.close()
