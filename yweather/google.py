@@ -21,26 +21,27 @@ def get_weather(location_id, hl):
 	dom = minidom.parse(handler)	
 	handler.close()
 
-		weather_data = {}
-	#	weather_data['title'] = dom.getElementsByTagName('title')[0].firstChild.data
+	weather_data = {}
+	weather_dom = dom.getElementsByTagName('weather')[0]
 
-	#	ns_data_structure = { 
-	#		'location': ('city', 'region', 'country'),
-	#		'units': ('temperature', 'distance', 'pressure', 'speed'),
-	#		'wind': ('chill', 'direction', 'speed'),
-	#		'atmosphere': ('humidity', 'visibility', 'pressure', 'rising'),
-	#		'astronomy': ('sunrise', 'sunset'),
-	#		'condition': ('text', 'code', 'temp', 'date')
-	#
-	#	}	
+	data_structure = { 
+			'forecast_information': ('city', 'postal_code', 'latitude_e6', 'longitude_e6', 'forecast_date', 'current_date_time', 'unit_system'),
+			'current_conditions': ('condition','temp_f', 'temp_c', 'humidity', 'wind_condition', 'icon')
+	}	
 	
-	#	for (tag, attrs) in ns_data_structure.iteritems():
-	#		weather_data[tag] = xml_get_ns_tag(dom, WEATHER_NS, tag, attrs)
+	forecast_conditions_structure = ('day_of_week', 'low', 'high', 'icon', 'condition')
+	for tag, tag2 in data_structure.iteritems():
+		weather_data[tag][tag2] =  weather_dom.getElementsByTagName(tag)[0].getElementsByTagName(tag2)[0].getAttribute('data')
 
-	#	forecasts = []
-	#	for forecast in dom.getElementsByTagNameNS(WEATHER_NS, 'forecast'):
-	#	        forecasts.append(xml_get_attrs(forecast,('date', 'low', 'high', 'text', 'code')))
-	#	weather_data['forecasts'] = forecasts
+	forecast_conditions = ('day_of_week', 'low', 'high', 'icon', 'condition')
+
+	forecasts = []
+	for forecast in dom.getElementsByTagName('forecast_conditions'):
+		tmp_forecast = {}
+		for tag in forecast_conditions.iteritems():
+			tmp_forecast[tag] = forecast.getElementsByTagName(tag).getAttribute('data')
+		forecasts.append(tmp_forecast)
+		weather_data['forecasts'] = forecasts
 	
 	dom.unlink()
 
