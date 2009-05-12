@@ -2,9 +2,6 @@
 Fetches weather reports from Yahoo! Weather
 """
 
-import urllib
-from xml.dom import minidom
-
 
 def get_weather(location_id, units = 'metric'):
 	"""
@@ -29,8 +26,10 @@ weather_data: a dictionary of weather data. See http://developer.yahoo.com/weath
 	else:
 		 unit = 'f'
 	url = WEATHER_URL % (location_id, unit)
-	dom = minidom.parse(urllib.urlopen(url))	
-	
+	handler = urllib2.urlopen(url)
+	dom = minidom.parse(handler)	
+	handler.close()
+		
 	weather_data = {}
 	weather_data['title'] = dom.getElementsByTagName('title')[0].firstChild.data
 	weather_data['link'] = dom.getElementsByTagName('link')[0].firstChild.data
