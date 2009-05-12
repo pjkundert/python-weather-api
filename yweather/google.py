@@ -31,7 +31,7 @@ def get_weather(location_id, hl = ''):
         }       
         
         forecast_conditions_structure = ('day_of_week', 'low', 'high', 'icon', 'condition')
-        for (tag, list_of_tags2) in data_structure.iteritems():
+        for (tag, list_of_tags2) in data_structure.iteritems():                
                 for tag2 in list_of_tags2:
                         weather_data[tag][tag2] =  weather_dom.getElementsByTagName(tag)[0].getElementsByTagName(tag2)[0].getAttribute('data')
 
