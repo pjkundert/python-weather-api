@@ -21,7 +21,7 @@ def get_weather(location_id, hl):
 	dom = minidom.parse(handler)	
 	handler.close()
 
-	#	weather_data = {}
+		weather_data = {}
 	#	weather_data['title'] = dom.getElementsByTagName('title')[0].firstChild.data
 
 	#	ns_data_structure = { 
@@ -41,6 +41,8 @@ def get_weather(location_id, hl):
 	#	for forecast in dom.getElementsByTagNameNS(WEATHER_NS, 'forecast'):
 	#	        forecasts.append(xml_get_attrs(forecast,('date', 'low', 'high', 'text', 'code')))
 	#	weather_data['forecasts'] = forecasts
+	
+	dom.unlink()
 
 	return weather_data
 	

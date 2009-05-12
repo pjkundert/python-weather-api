@@ -58,6 +58,8 @@ weather_data: a dictionary of weather data. See http://developer.yahoo.com/weath
 	for forecast in dom.getElementsByTagNameNS(WEATHER_NS, 'forecast'):
 	        forecasts.append(xml_get_attrs(forecast,('date', 'low', 'high', 'text', 'code')))
 	weather_data['forecasts'] = forecasts
+	
+	dom.unlink()
 
 	return weather_data
 	
