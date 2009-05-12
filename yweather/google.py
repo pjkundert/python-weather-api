@@ -42,8 +42,8 @@ def get_weather(location_id, hl = ''):
         forecasts = []
         for forecast in dom.getElementsByTagName('forecast_conditions'):
                 tmp_forecast = {}
-                for tag in forecast_conditions.iteritems():
-                        tmp_forecast[tag] = forecast.getElementsByTagName(tag).getAttribute('data')
+                for tag in forecast_conditions:
+                        tmp_forecast[tag] = forecast.getElementsByTagName(tag)[0].getAttribute('data')
                 forecasts.append(tmp_forecast)
                 weather_data['forecasts'] = forecasts
         
