@@ -1,7 +1,8 @@
 """
 Fetches weather reports from Yahoo! Weather
 """
-
+import urllib2
+from xml.dom import minidom
 
 def get_weather(location_id, units = 'metric'):
 	"""
