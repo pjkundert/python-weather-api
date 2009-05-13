@@ -31,14 +31,14 @@ from xml.dom import minidom
 
 def get_weather(location_id, hl = ''):
         """
-        Fetches weather report from Yahoo!
+        Fetches weather report from Google
 
         Parameters 
           location_id: a zip code (10001); city name, state (weather=woodland,PA); city name, country (weather=london,england); or possibly others.
           hl: the language parameter (language code)
 
         Returns:
-          weather_data: a dictionary of weather data. See http://developer.yahoo.com/weather/
+          weather_data: a dictionary of weather data. 
         """
 
         WEATHER_URL = 'http://www.google.com/ig/api?weather=%s&hl=%s'
