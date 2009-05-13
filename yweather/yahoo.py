@@ -41,7 +41,7 @@ units: type of units. 'metric' for metric and '' for  non-metric
 Note that choosing metric units changes all the weather units to metric, for example, wind speed will be reported as kilometers per hour and barometric pressure as millibars.
  
 Returns:
-weather_data: a dictionary of weather data. See http://developer.yahoo.com/weather/
+weather_data: a dictionary of weather data. See  http://developer.yahoo.com/weather/#channel
         """
 
         WEATHER_URL = 'http://xml.weather.yahoo.com/forecastrss?p=%s&u=%s'
