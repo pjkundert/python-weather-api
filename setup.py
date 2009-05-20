@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 
-setup(name='yweather',
+setup(name='pywapi',
 		version='0.1',
 		description='A python wrapper around the Yahoo! Weather and Google Weather APIs',
 		author='Eugene Kaznacheev',
