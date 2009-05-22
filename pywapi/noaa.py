@@ -47,10 +47,10 @@ weather_data: a dictionary of weather data.
         dom = minidom.parse(handler)    
         handler.close()
                 
-        data_structure = ('suggested_pickup'
-                                'suggested_pickup_period'
-                                'location'
-                                'station_id'
+        data_structure = ('suggested_pickup',
+                                'suggested_pickup_period',
+                                'location',
+                                'station_id',
                                 'latitude',
                                 'longitude',
                                 'observation_time',
@@ -82,9 +82,9 @@ weather_data: a dictionary of weather data.
                                 'two_day_history_url',
                                 'ob_url'
                                 )
-
-        for tag in data_structure.iteritems():
-               weather_data[tag] =  dom.getElementsByTagName('current_observation')[0].getElementsByTagName(tag)[0].value
+	weather_data = {}
+        for tag in data_structure:
+               weather_data[tag] =  dom.getElementsByTagName('current_observation')[0].getElementsByTagName(tag)[0].firstChild.data
 
         dom.unlink()
         return weather_data
