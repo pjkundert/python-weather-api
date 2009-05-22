@@ -33,7 +33,9 @@ def get_weather(station_id):
 Fetches weather report from Yahoo!
 
 Parameters 
-station_id: 
+station_id: http://www.weather.gov/xml/current_obs/seek.php?state=az&Find=Find
+
+
 Returns:
 weather_data: a dictionary of weather data. 
 ## Icons: http://www.weather.gov/xml/current_obs/weather.php
