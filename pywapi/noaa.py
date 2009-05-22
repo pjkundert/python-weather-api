@@ -41,50 +41,50 @@ weather_data: a dictionary of weather data.
 ## Icons: http://www.weather.gov/xml/current_obs/weather.php
         """
 
-		WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
+        WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
         url = WEATHER_URL % (station_id)
         handler = urllib2.urlopen(url)
         dom = minidom.parse(handler)    
         handler.close()
-		
-		data_structure = ( 'suggested_pickup'
-				'suggested_pickup_period'
-				'location'
-				'station_id'
-				'latitude',
-				'longitude',
-				'observation_time',
-				'observation_time_rfc822',
-				'weather',
-				'temperature_string',
-				'temp_f',
-				'temp_c',
-				'relative_humidity',
-				'wind_string',
-				'wind_dir',
-				'wind_degrees',
-				'wind_mph',
-				'wind_gust_mph',
-				'pressure_string',
-				'pressure_mb',
-				'pressure_in',
-				'dewpoint_string',
-				'dewpoint_f',
-				'dewpoint_c',
-				'heat_index_string',
-				'heat_index_f',
-				'heat_index_c',
-				'windchill_string',
-				'windchill_f',
-				'windchill_c',
-				'icon_url_base',
-				'icon_url_name',
-				'two_day_history_url',
-				'ob_url'
-				)
+                
+        data_structure = ('suggested_pickup'
+                                'suggested_pickup_period'
+                                'location'
+                                'station_id'
+                                'latitude',
+                                'longitude',
+                                'observation_time',
+                                'observation_time_rfc822',
+                                'weather',
+                                'temperature_string',
+                                'temp_f',
+                                'temp_c',
+                                'relative_humidity',
+                                'wind_string',
+                                'wind_dir',
+                                'wind_degrees',
+                                'wind_mph',
+                                'wind_gust_mph',
+                                'pressure_string',
+                                'pressure_mb',
+                                'pressure_in',
+                                'dewpoint_string',
+                                'dewpoint_f',
+                                'dewpoint_c',
+                                'heat_index_string',
+                                'heat_index_f',
+                                'heat_index_c',
+                                'windchill_string',
+                                'windchill_f',
+                                'windchill_c',
+                                'icon_url_base',
+                                'icon_url_name',
+                                'two_day_history_url',
+                                'ob_url'
+                                )
 
         for tag in data_structure.iteritems():
-	       weather_data[tag] =  dom.getElementsByTagName('current_observation')[0].getElementsByTagName(tag)[0].value
+               weather_data[tag] =  dom.getElementsByTagName('current_observation')[0].getElementsByTagName(tag)[0].value
 
         dom.unlink()
         return weather_data
