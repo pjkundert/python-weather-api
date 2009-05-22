@@ -46,39 +46,49 @@ weather_data: a dictionary of weather data.
         handler = urllib2.urlopen(url)
         dom = minidom.parse(handler)    
         handler.close()
-        
-        dom.unlink()
+		
+		data_structure = ( 'suggested_pickup'
+				'suggested_pickup_period'
+				'location'
+				'station_id'
+				'latitude',
+				'longitude',
+				'observation_time',
+				'observation_time_rfc822',
+				'weather',
+				'temperature_string',
+				'temp_f',
+				'temp_c',
+				'relative_humidity',
+				'wind_string',
+				'wind_dir',
+				'wind_degrees',
+				'wind_mph',
+				'wind_gust_mph',
+				'pressure_string',
+				'pressure_mb',
+				'pressure_in',
+				'dewpoint_string',
+				'dewpoint_f',
+				'dewpoint_c',
+				'heat_index_string',
+				'heat_index_f',
+				'heat_index_c',
+				'windchill_string',
+				'windchill_f',
+				'windchill_c',
+				'icon_url_base',
+				'icon_url_name',
+				'two_day_history_url',
+				'ob_url'
+				)
 
+        for tag in data_structure.iteritems():
+	       weather_data[tag] =  dom.getElementsByTagName('current_observation')[0].getElementsByTagName(tag)[0].value
+
+        dom.unlink()
         return weather_data
         
-def xml_get_ns_tag(dom, WEATHER_NS, tag, attrs):
-        """
-        Parses the necessary tag and returns the dictionary with values
-        
-        Parameters:
-        dom - DOM
-        WEATHER_NS - namespace
-        tag - necessary tag
-        attrs - tuple of attributes
-
-        Returns: a dictionary of elements 
-        """
-        element = dom.getElementsByTagNameNS(WEATHER_NS, tag)[0]
-        return xml_get_attrs(element,attrs)
 
 
-def xml_get_attrs(xml_element, attrs):
-        """
-        Returns the list of necessary attributes
-        
-        Parameters: 
-        element: xml element
-        attrs: tuple of attributes
 
-        Return: a dictionary of elements
-        """
-        
-        result = {}
-        for attr in attrs:
-                result[attr] = xml_element.getAttribute(attr)   
-        return result
