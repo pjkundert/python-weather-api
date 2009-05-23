@@ -40,6 +40,8 @@ station_id: To find your station ID, perform the following steps:
 4. The station ID is in the URL for the weather page for that station.
 For example if the weather page is http://weather.noaa.gov/weather/current/KPEO.html -- the station ID is KPEO.
 
+Other way to get the stattion ID: use this library: http://code.google.com/p/python-weather/ and 'Weather.location2station' function.
+
 Returns:
 weather_data: a dictionary of weather data. 
 
