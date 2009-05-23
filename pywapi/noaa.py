@@ -30,15 +30,20 @@ from xml.dom import minidom
 
 def get_weather(station_id):
         """
-Fetches weather report from Yahoo!
+Fetches weather report from NOAA: National Oceanic and Atmospheric Administration (United States)
 
 Parameters 
-station_id: http://www.weather.gov/xml/current_obs/seek.php?state=az&Find=Find
-
+station_id: To find your station ID, perform the following steps:
+1. Open this URL: http://www.weather.gov/xml/current_obs/seek.php?state=az&Find=Find
+2. Select the necessary state state. Click 'Find'.
+3. Find the necessary station in the 'Observation Location' column.
+4. The station ID is in the URL for the weather page for that station.
+For example if the weather page is http://weather.noaa.gov/weather/current/KPEO.html -- the station ID is KPEO.
 
 Returns:
 weather_data: a dictionary of weather data. 
-## Icons: http://www.weather.gov/xml/current_obs/weather.php
+
+(useful icons: http://www.weather.gov/xml/current_obs/weather.php)
         """
 
         WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
