@@ -96,6 +96,10 @@ weather_data: a dictionary of weather data.
         dom.unlink()
         return weather_data
         
-
+def get_weather_from_noaa(station_id):
+        """
+        Wrapper for get_weather() function.
+        """
+        return get_weather(station_id)
 
 

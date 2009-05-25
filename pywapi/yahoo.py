@@ -87,6 +87,13 @@ weather_data: a dictionary of weather data. See  http://developer.yahoo.com/weat
         dom.unlink()
 
         return weather_data
+
+def get_weather_from_yahoo(location_id, units = 'metric'):
+        """
+        Wrapper for get_weather() function.
+        """
+        return get_weather(location_id, units)
+
         
 def xml_get_ns_tag(dom, WEATHER_NS, tag, attrs):
         """

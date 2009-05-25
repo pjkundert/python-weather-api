@@ -77,6 +77,14 @@ def get_weather(location_id, hl = ''):
         return weather_data
         
 
+def get_weather_from_google(location_id, hl = ''):
+	"""
+	Wrapper for get_weather() function.
+	"""
+	return get_weather(location_id, hl)
+	
+
+
 def xml_get_attrs(xml_element, attrs):
         """
         Returns the list of necessary attributes
