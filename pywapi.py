@@ -35,6 +35,8 @@ YAHOO_WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
 
 NOAA_WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
 
+GISMETEO_WEATHER_URL = 'http://informer.gismeteo.ru/xml/%s.xml'
+
 def get_weather_from_google(location_id, hl = ''):
         """
         Fetches weather report from Google
@@ -212,24 +214,25 @@ weather_data: a dictionary of weather data.
 	
 
 
-def get_weather_from_gismeteo(locaiton_id):
+def get_weather_from_gismeteo(location_id):
 	"""
-Fetches weather report from Yahoo!
+Fetches weather report from GisMeteo (russian weather service)
 
 Parameters
-location_id: A five digit US zip code or location ID. To find your location ID,
-browse or search for your city from the Weather home page(http://weather.yahoo.com/)
-The weather ID is in the URL for the forecast page for that city. You can also get the location ID by entering your zip code on the home page. For example, if you search for Los Angeles on the Weather home page, the forecast page for that city is http://weather.yahoo.com/forecast/USCA0638.html. The location ID is USCA0638.
+location_id: A location ID of the necessary place. To find your location ID,
+browse or search for your city from the Gismeteo page: http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (the page is in Russian)
+The location ID is in the URL for the XML URL for that city. 
+For example, if you search for New York on the GisMeteo page, the XML URLfor that city is 
+http://informer.gismeteo.ru/xml/72503_1.xml. The location ID is 72503_1.
 
-units: type of units. 'metric' for metric and '' for  non-metric
-Note that choosing metric units changes all the weather units to metric, for example, wind speed will be reported as kilometers per hour and barometric pressure as millibars.
 
 Returns:
-weather_data: a dictionary of weather data. See  http://developer.yahoo.com/weather/#channel
-	
-
+weather_data: a dictionary of weather data. See http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (at the page bottom) 
 	"""
-	pass
+	url = GISMETEO_WEATHER_URL % (location_id)
+	handler = urllib2.urlopen(url)
+	dom = minidom.parse(handler)
+	handler.close()
 
 	
 def xml_get_ns_yahoo_tag(dom, YAHOO_WEATHER_NS, tag, attrs):
