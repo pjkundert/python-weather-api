@@ -33,7 +33,7 @@ GOOGLE_WEATHER_URL = 'http://www.google.com/ig/api?weather=%s&hl=%s'
 YAHOO_WEATHER_URL = 'http://xml.weather.yahoo.com/forecastrss?p=%s&u=%s'
 YAHOO_WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
 
-NOAA_ WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
+NOAA_WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
 
 def get_weather_from_google(location_id, hl = ''):
         """
