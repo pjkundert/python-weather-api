@@ -210,6 +210,27 @@ weather_data: a dictionary of weather data.
         dom.unlink()
         return weather_data
 	
+
+
+def get_weather_from_gismeteo(locaiton_id):
+	"""
+Fetches weather report from Yahoo!
+
+Parameters
+location_id: A five digit US zip code or location ID. To find your location ID,
+browse or search for your city from the Weather home page(http://weather.yahoo.com/)
+The weather ID is in the URL for the forecast page for that city. You can also get the location ID by entering your zip code on the home page. For example, if you search for Los Angeles on the Weather home page, the forecast page for that city is http://weather.yahoo.com/forecast/USCA0638.html. The location ID is USCA0638.
+
+units: type of units. 'metric' for metric and '' for  non-metric
+Note that choosing metric units changes all the weather units to metric, for example, wind speed will be reported as kilometers per hour and barometric pressure as millibars.
+
+Returns:
+weather_data: a dictionary of weather data. See  http://developer.yahoo.com/weather/#channel
+	
+
+	"""
+	pass
+
 	
 def xml_get_ns_yahoo_tag(dom, YAHOO_WEATHER_NS, tag, attrs):
         """
