@@ -25,7 +25,7 @@
 Fetches weather reports from Google Weather, Yahoo Wheather and NOAA
 """
 
-import urllib2
+import urllib2, urllib
 from xml.dom import minidom
 
 GOOGLE_WEATHER_URL = 'http://www.google.com/ig/api?weather=%s&hl=%s'
@@ -233,6 +233,33 @@ weather_data: a dictionary of weather data. See http://informer.gismeteo.ru/xml.
 	handler = urllib2.urlopen(url)
 	dom = minidom.parse(handler)
 	handler.close()
+	
+	forecast_data_structure = {
+			'PHENOMENA': ('cloudiness','precipitation', 'rpower', 'spower'),
+			'PRESSURE': ('max','min'),
+			'TEMPERATURE': ('max','min'),
+			'WIND': ('max','min', 'direction'),
+			'RELWET': ('max','min'),
+			'HEAT': ('max','min'),
+			}
+	town_tag_attr = ('index', 'sname', 'latitude','longitude')
+	forecast_tag_attr = ('day', 'month', 'year', 'hour', 'tod', 'predict', 'weekday')
+	
+	weather_data = {}
+
+    for attrs in town_tag_attr.iteritems():
+    	weather_data['town'] = xml_get_attrs(dom.getElementsByTagName('TOWN')[0], attrs)
+
+        forecasts = []
+        for forecast in dom.getElementsByTagName('FORECAST'):
+            _tmp_forecast = {}
+			_tmp_forecast.append(xml_get_attrs(forecast, forecast_tag_attr))			    
+			for (tag, attrs) in forecast_data_structure:
+				_tmp_forecast[tag] = xml_get_attrs(forecast.getElementByTagName[tag], attrs)
+			forecasts.append(_tmp_forecast)
+
+        weather_data['forecasts'] = forecasts
+
 
 	
 def xml_get_ns_yahoo_tag(dom, YAHOO_WEATHER_NS, tag, attrs):
