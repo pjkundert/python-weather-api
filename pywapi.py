@@ -247,15 +247,15 @@ weather_data: a dictionary of weather data. See http://informer.gismeteo.ru/xml.
 	
 	weather_data = {}
 
-    for attrs in town_tag_attr.iteritems():
-    	weather_data['town'] = xml_get_attrs(dom.getElementsByTagName('TOWN')[0], attrs)
+    	for attrs in town_tag_attr:
+    		weather_data['town'] = xml_get_attrs(dom.getElementsByTagName('TOWN')[0], attrs)
 
         forecasts = []
         for forecast in dom.getElementsByTagName('FORECAST'):
-            _tmp_forecast = {}
-			_tmp_forecast.append(xml_get_attrs(forecast, forecast_tag_attr))			    
-			for (tag, attrs) in forecast_data_structure:
-				_tmp_forecast[tag] = xml_get_attrs(forecast.getElementByTagName[tag], attrs)
+        	_tmp_forecast = {}
+		_tmp_forecast.update(xml_get_attrs(forecast, forecast_tag_attr))			    
+		for (tag, attrs) in forecast_data_structure.iteritems():
+			_tmp_forecast[tag] = xml_get_attrs(forecast.getElementsByTagName[tag][0], attrs)
 			forecasts.append(_tmp_forecast)
 
         weather_data['forecasts'] = forecasts
