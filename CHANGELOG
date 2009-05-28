@@ -1,0 +1,9 @@
+v0.2
++ Added support of NOAA XML feeds
++ Added support of GisMeteo XML feeds
++ Re-organized files: no more package, only one Python module
++ Added some example scripts
++ Added CHANGELOG and README files
+
+v0.1
++ Inital release: it is possible to get weather reports from Yahoo and Google
