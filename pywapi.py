@@ -25,7 +25,7 @@
 Fetches weather reports from Google Weather, Yahoo Wheather and NOAA
 """
 
-import urllib2, urllib
+import urllib2, string
 from xml.dom import minidom
 
 GOOGLE_WEATHER_URL = 'http://www.google.com/ig/api?weather=%s&hl=%s'
@@ -38,263 +38,264 @@ NOAA_WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
 GISMETEO_WEATHER_URL = 'http://informer.gismeteo.ru/xml/%s.xml'
 
 def get_weather_from_google(location_id, hl = ''):
-        """
-        Fetches weather report from Google
+    """
+    Fetches weather report from Google
 
-        Parameters 
-          location_id: a zip code (10001); city name, state (weather=woodland,PA); city name, country (weather=london,england); or possibly others.
-          hl: the language parameter (language code)
+    Parameters 
+      location_id: a zip code (10001); city name, state (weather=woodland,PA); city name, country (weather=london,england); or possibly others.
+      hl: the language parameter (language code)
 
-        Returns:
-          weather_data: a dictionary of weather data. 
-        """
+    Returns:
+      weather_data: a dictionary of weather data. 
+    """
 
-        url = GOOGLE_WEATHER_URL % (location_id, hl)
-        handler = urllib2.urlopen(url)
-        dom = minidom.parse(handler)    
-        handler.close()
+    url = GOOGLE_WEATHER_URL % (location_id, hl)
+    handler = urllib2.urlopen(url)
+    dom = minidom.parse(handler)    
+    handler.close()
 
-        weather_data = {}
-        weather_dom = dom.getElementsByTagName('weather')[0]
+    weather_data = {}
+    weather_dom = dom.getElementsByTagName('weather')[0]
 
-        data_structure = { 
-                        'forecast_information': ('city', 'postal_code', 'latitude_e6', 'longitude_e6', 'forecast_date', 'current_date_time', 'unit_system'),
-                        'current_conditions': ('condition','temp_f', 'temp_c', 'humidity', 'wind_condition', 'icon')
-        }       
-        
-        forecast_conditions_structure = ('day_of_week', 'low', 'high', 'icon', 'condition')
-        for (tag, list_of_tags2) in data_structure.iteritems():
-                tmp_conditions = {}
-                for tag2 in list_of_tags2:
-                        tmp_conditions[tag2] =  weather_dom.getElementsByTagName(tag)[0].getElementsByTagName(tag2)[0].getAttribute('data')
-                weather_data[tag] = tmp_conditions
+    data_structure = { 
+        'forecast_information': ('city', 'postal_code', 'latitude_e6', 'longitude_e6', 'forecast_date', 'current_date_time', 'unit_system'),
+        'current_conditions': ('condition','temp_f', 'temp_c', 'humidity', 'wind_condition', 'icon')
+    }       
+    
+    forecast_conditions_structure = ('day_of_week', 'low', 'high', 'icon', 'condition')
+    for (tag, list_of_tags2) in data_structure.iteritems():
+        tmp_conditions = {}
+        for tag2 in list_of_tags2:
+            tmp_conditions[tag2] =  weather_dom.getElementsByTagName(tag)[0].getElementsByTagName(tag2)[0].getAttribute('data')
+        weather_data[tag] = tmp_conditions
 
-        forecast_conditions = ('day_of_week', 'low', 'high', 'icon', 'condition')
+    forecast_conditions = ('day_of_week', 'low', 'high', 'icon', 'condition')
 
-        forecasts = []
-        for forecast in dom.getElementsByTagName('forecast_conditions'):
-                tmp_forecast = {}
-                for tag in forecast_conditions:
-                        tmp_forecast[tag] = forecast.getElementsByTagName(tag)[0].getAttribute('data')
-                forecasts.append(tmp_forecast)
-                weather_data['forecasts'] = forecasts
-        
-        dom.unlink()
+    forecasts = []
+    for forecast in dom.getElementsByTagName('forecast_conditions'):
+        tmp_forecast = {}
+        for tag in forecast_conditions:
+            tmp_forecast[tag] = forecast.getElementsByTagName(tag)[0].getAttribute('data')
+        forecasts.append(tmp_forecast)
 
-        return weather_data
-        
+    weather_data['forecasts'] = forecasts    
+    dom.unlink()
+
+    return weather_data
+    
 
 
 def get_weather_from_yahoo(location_id, units = 'metric'):
-        """
-Fetches weather report from Yahoo!
+    """
+    Fetches weather report from Yahoo!
 
-Parameters 
-location_id: A five digit US zip code or location ID. To find your location ID, 
-browse or search for your city from the Weather home page(http://weather.yahoo.com/)
-The weather ID is in the URL for the forecast page for that city. You can also get the location ID by entering your zip code on the home page. For example, if you search for Los Angeles on the Weather home page, the forecast page for that city is http://weather.yahoo.com/forecast/USCA0638.html. The location ID is USCA0638.
+    Parameters 
+    location_id: A five digit US zip code or location ID. To find your location ID, 
+    browse or search for your city from the Weather home page(http://weather.yahoo.com/)
+    The weather ID is in the URL for the forecast page for that city. You can also get the location ID by entering your zip code on the home page. For example, if you search for Los Angeles on the Weather home page, the forecast page for that city is http://weather.yahoo.com/forecast/USCA0638.html. The location ID is USCA0638.
 
-units: type of units. 'metric' for metric and '' for  non-metric
-Note that choosing metric units changes all the weather units to metric, for example, wind speed will be reported as kilometers per hour and barometric pressure as millibars.
+    units: type of units. 'metric' for metric and '' for  non-metric
+    Note that choosing metric units changes all the weather units to metric, for example, wind speed will be reported as kilometers per hour and barometric pressure as millibars.
  
-Returns:
-weather_data: a dictionary of weather data. See  http://developer.yahoo.com/weather/#channel
-        """
+    Returns:
+    weather_data: a dictionary of weather data. See  http://developer.yahoo.com/weather/#channel
+    """
 
-        if units == 'metric':
-                unit = 'c'
-        else:
-                 unit = 'f'
-        url = YAHOO_WEATHER_URL % (location_id, unit)
-        handler = urllib2.urlopen(url)
-        dom = minidom.parse(handler)    
-        handler.close()
-                
-        weather_data = {}
-        weather_data['title'] = dom.getElementsByTagName('title')[0].firstChild.data
-        weather_data['link'] = dom.getElementsByTagName('link')[0].firstChild.data
-
-        ns_data_structure = { 
-                'location': ('city', 'region', 'country'),
-                'units': ('temperature', 'distance', 'pressure', 'speed'),
-                'wind': ('chill', 'direction', 'speed'),
-                'atmosphere': ('humidity', 'visibility', 'pressure', 'rising'),
-                'astronomy': ('sunrise', 'sunset'),
-                'condition': ('text', 'code', 'temp', 'date')
-
-        }       
+    if units == 'metric':
+        unit = 'c'
+    else:
+        unit = 'f'
+    url = YAHOO_WEATHER_URL % (location_id, unit)
+    handler = urllib2.urlopen(url)
+    dom = minidom.parse(handler)    
+    handler.close()
         
-        for (tag, attrs) in ns_data_structure.iteritems():
-                weather_data[tag] = xml_get_ns_yahoo_tag(dom, YAHOO_WEATHER_NS, tag, attrs)
+    weather_data = {}
+    weather_data['title'] = dom.getElementsByTagName('title')[0].firstChild.data
+    weather_data['link'] = dom.getElementsByTagName('link')[0].firstChild.data
 
-        weather_data['geo'] = {}
-        weather_data['geo']['lat'] = dom.getElementsByTagName('geo:lat')[0].firstChild.data
-        weather_data['geo']['long'] = dom.getElementsByTagName('geo:long')[0].firstChild.data
+    ns_data_structure = { 
+        'location': ('city', 'region', 'country'),
+        'units': ('temperature', 'distance', 'pressure', 'speed'),
+        'wind': ('chill', 'direction', 'speed'),
+        'atmosphere': ('humidity', 'visibility', 'pressure', 'rising'),
+        'astronomy': ('sunrise', 'sunset'),
+        'condition': ('text', 'code', 'temp', 'date')
+    }       
+    
+    for (tag, attrs) in ns_data_structure.iteritems():
+        weather_data[tag] = xml_get_ns_yahoo_tag(dom, YAHOO_WEATHER_NS, tag, attrs)
 
-        weather_data['condition']['title'] = dom.getElementsByTagName('item')[0].getElementsByTagName('title')[0].firstChild.data
-        weather_data['html_description'] = dom.getElementsByTagName('item')[0].getElementsByTagName('description')[0].firstChild.data
-        
-        forecasts = []
-        for forecast in dom.getElementsByTagNameNS(YAHOO_WEATHER_NS, 'forecast'):
-                forecasts.append(xml_get_attrs(forecast,('date', 'low', 'high', 'text', 'code')))
-        weather_data['forecasts'] = forecasts
-        
-        dom.unlink()
+    weather_data['geo'] = {}
+    weather_data['geo']['lat'] = dom.getElementsByTagName('geo:lat')[0].firstChild.data
+    weather_data['geo']['long'] = dom.getElementsByTagName('geo:long')[0].firstChild.data
 
-        return weather_data
+    weather_data['condition']['title'] = dom.getElementsByTagName('item')[0].getElementsByTagName('title')[0].firstChild.data
+    weather_data['html_description'] = dom.getElementsByTagName('item')[0].getElementsByTagName('description')[0].firstChild.data
+    
+    forecasts = []
+    for forecast in dom.getElementsByTagNameNS(YAHOO_WEATHER_NS, 'forecast'):
+        forecasts.append(xml_get_attrs(forecast,('date', 'low', 'high', 'text', 'code')))
+    weather_data['forecasts'] = forecasts
+    
+    dom.unlink()
 
-        
-	
+    return weather_data
+
+    
+    
 def get_weather_from_noaa(station_id):
-        """
-Fetches weather report from NOAA: National Oceanic and Atmospheric Administration (United States)
+    """
+    Fetches weather report from NOAA: National Oceanic and Atmospheric Administration (United States)
 
-Parameters 
-station_id: To find your station ID, perform the following steps:
-1. Open this URL: http://www.weather.gov/xml/current_obs/seek.php?state=az&Find=Find
-2. Select the necessary state state. Click 'Find'.
-3. Find the necessary station in the 'Observation Location' column.
-4. The station ID is in the URL for the weather page for that station.
-For example if the weather page is http://weather.noaa.gov/weather/current/KPEO.html -- the station ID is KPEO.
+    Parameter:
+    station_id: To find your station ID, perform the following steps:
+    1. Open this URL: http://www.weather.gov/xml/current_obs/seek.php?state=az&Find=Find
+    2. Select the necessary state state. Click 'Find'.
+    3. Find the necessary station in the 'Observation Location' column.
+    4. The station ID is in the URL for the weather page for that station.
+    For example if the weather page is http://weather.noaa.gov/weather/current/KPEO.html -- the station ID is KPEO.
 
-Other way to get the station ID: use this library: http://code.google.com/p/python-weather/ and 'Weather.location2station' function.
+    Other way to get the station ID: use this library: http://code.google.com/p/python-weather/ and 'Weather.location2station' function.
 
-Returns:
-weather_data: a dictionary of weather data. 
+    Returns:
+    weather_data: a dictionary of weather data. 
 
-(useful icons: http://www.weather.gov/xml/current_obs/weather.php)
-        """
+    (useful icons: http://www.weather.gov/xml/current_obs/weather.php)
+    """
 
-        url = NOAA_WEATHER_URL % (station_id)
-        handler = urllib2.urlopen(url)
-        dom = minidom.parse(handler)    
-        handler.close()
-                
-        data_structure = ('suggested_pickup',
-                                'suggested_pickup_period',
-                                'location',
-                                'station_id',
-                                'latitude',
-                                'longitude',
-                                'observation_time',
-                                'observation_time_rfc822',
-                                'weather',
-                                'temperature_string',
-                                'temp_f',
-                                'temp_c',
-                                'relative_humidity',
-                                'wind_string',
-                                'wind_dir',
-                                'wind_degrees',
-                                'wind_mph',
-                                'wind_gust_mph',
-                                'pressure_string',
-                                'pressure_mb',
-                                'pressure_in',
-                                'dewpoint_string',
-                                'dewpoint_f',
-                                'dewpoint_c',
-                                'heat_index_string',
-                                'heat_index_f',
-                                'heat_index_c',
-                                'windchill_string',
-                                'windchill_f',
-                                'windchill_c',
-                                'icon_url_base',
-                                'icon_url_name',
-                                'two_day_history_url',
-                                'ob_url'
-                                )
-	weather_data = {}
-        for tag in data_structure:
-               weather_data[tag] =  dom.getElementsByTagName('current_observation')[0].getElementsByTagName(tag)[0].firstChild.data
+    url = NOAA_WEATHER_URL % (station_id)
+    handler = urllib2.urlopen(url)
+    dom = minidom.parse(handler)    
+    handler.close()
+        
+    data_structure = ('suggested_pickup',
+                'suggested_pickup_period',
+                'location',
+                'station_id',
+                'latitude',
+                'longitude',
+                'observation_time',
+                'observation_time_rfc822',
+                'weather',
+                'temperature_string',
+                'temp_f',
+                'temp_c',
+                'relative_humidity',
+                'wind_string',
+                'wind_dir',
+                'wind_degrees',
+                'wind_mph',
+                'wind_gust_mph',
+                'pressure_string',
+                'pressure_mb',
+                'pressure_in',
+                'dewpoint_string',
+                'dewpoint_f',
+                'dewpoint_c',
+                'heat_index_string',
+                'heat_index_f',
+                'heat_index_c',
+                'windchill_string',
+                'windchill_f',
+                'windchill_c',
+                'icon_url_base',
+                'icon_url_name',
+                'two_day_history_url',
+                'ob_url'
+                )
+    weather_data = {}
+    current_observation = dom.getElementsByTagName('current_observation')[0]
+    for tag in data_structure:
+        weather_data[tag] = current_observation.getElementsByTagName(tag)[0].firstChild.data
 
-        dom.unlink()
-        return weather_data
-	
+    dom.unlink()
+    return weather_data
+    
 
 
 def get_weather_from_gismeteo(location_id):
-	"""
-Fetches weather report from GisMeteo (russian weather service)
+    """
+    Fetches weather report from GisMeteo (russian weather service)
 
-Parameters
-location_id: A location ID of the necessary place. To find your location ID,
-browse or search for your city from the Gismeteo page: http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (the page is in Russian)
-The location ID is in the URL for the XML URL for that city. 
-For example, if you search for New York on the GisMeteo page, the XML URLfor that city is 
-http://informer.gismeteo.ru/xml/72503_1.xml. The location ID is 72503_1.
+    Parameters
+    location_id: A location ID of the necessary place. To find your location ID,
+    browse or search for your city from the Gismeteo page: http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (the page is in Russian)
+    The location ID is in the URL for the XML URL for that city. 
+    For example, if you search for New York on the GisMeteo page, the XML URLfor that city is 
+    http://informer.gismeteo.ru/xml/72503_1.xml. The location ID is 72503_1.
+
+    Returns:
+    weather_data: a dictionary of weather data. See http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (at the page bottom) 
+    """
+    
+    url = GISMETEO_WEATHER_URL % (location_id)
+    handler = urllib2.urlopen(url)
+    dom = minidom.parse(handler)
+    handler.close()
+    
+    forecast_data_structure = {
+        'PHENOMENA': ('cloudiness','precipitation', 'rpower', 'spower'),
+        'PRESSURE': ('max','min'),
+        'TEMPERATURE': ('max','min'),
+        'WIND': ('max','min', 'direction'),
+        'RELWET': ('max','min'),
+        'HEAT': ('max','min'),
+            }
+    town_tag_attr = ('index', 'sname', 'latitude','longitude')
+    forecast_tag_attr = ('day', 'month', 'year', 'hour', 'tod', 'predict', 'weekday')
+    
+    weather_data = {}
+
+    for attrs in town_tag_attr:
+        weather_data['town'] = xml_get_attrs(dom.getElementsByTagName('TOWN')[0], attrs)
+
+    forecasts = []
+    xml_forecats_node  = dom.getElementsByTagName('FORECAST')
+
+    for i in range(xml_forecats_node.length):
+        forecast = xml_forecats_node.item(i)
+        _tmp_forecast = {}
+        _tmp_forecast.update(xml_get_attrs(forecast, forecast_tag_attr))                
+        for (tag, attrs) in forecast_data_structure.iteritems():
+            _tmp_forecast[string.lower(tag)] = xml_get_attrs(forecast.getElementsByTagName(tag)[0], attrs)
+        forecasts.append(_tmp_forecast)
+
+    dom.unlink()
+    weather_data['forecasts'] = forecasts
+
+    return weather_data
 
 
-Returns:
-weather_data: a dictionary of weather data. See http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (at the page bottom) 
-	"""
-	url = GISMETEO_WEATHER_URL % (location_id)
-	handler = urllib2.urlopen(url)
-	dom = minidom.parse(handler)
-	handler.close()
-	
-	forecast_data_structure = {
-			'PHENOMENA': ('cloudiness','precipitation', 'rpower', 'spower'),
-			'PRESSURE': ('max','min'),
-			'TEMPERATURE': ('max','min'),
-			'WIND': ('max','min', 'direction'),
-			'RELWET': ('max','min'),
-			'HEAT': ('max','min'),
-			}
-	town_tag_attr = ('index', 'sname', 'latitude','longitude')
-	forecast_tag_attr = ('day', 'month', 'year', 'hour', 'tod', 'predict', 'weekday')
-	
-	weather_data = {}
-
-    	for attrs in town_tag_attr:
-    		weather_data['town'] = xml_get_attrs(dom.getElementsByTagName('TOWN')[0], attrs)
-
-        forecasts = []
-	xml_forecats_node  = dom.getElementsByTagName('FORECAST')
-
-        for i  in range(xml_forecats_node.length):
-		forecast = xml_forecats_node.item(i)
-        	_tmp_forecast = {}
-		_tmp_forecast.update(xml_get_attrs(forecast, forecast_tag_attr))			    
-		for (tag, attrs) in forecast_data_structure.iteritems():
-			_tmp_forecast[tag] = xml_get_attrs(forecast.getElementsByTagName(tag)[0], attrs)
-		forecasts.append(_tmp_forecast)
-		
-
-        weather_data['forecasts'] = forecasts
-	return weather_data
-
-
-	
+    
 def xml_get_ns_yahoo_tag(dom, YAHOO_WEATHER_NS, tag, attrs):
-        """
-        Parses the necessary tag and returns the dictionary with values
-        
-        Parameters:
-        dom - DOM
-        YAHOO_WEATHER_NS - namespace
-        tag - necessary tag
-        attrs - tuple of attributes
+    """
+    Parses the necessary tag and returns the dictionary with values
+    
+    Parameters:
+    dom - DOM
+    YAHOO_WEATHER_NS - namespace
+    tag - necessary tag
+    attrs - tuple of attributes
 
-        Returns: a dictionary of elements 
-        """
-        element = dom.getElementsByTagNameNS(YAHOO_WEATHER_NS, tag)[0]
-        return xml_get_attrs(element,attrs)
+    Returns: a dictionary of elements 
+    """
+    element = dom.getElementsByTagNameNS(YAHOO_WEATHER_NS, tag)[0]
+    return xml_get_attrs(element,attrs)
 
 
 def xml_get_attrs(xml_element, attrs):
-        """
-        Returns the list of necessary attributes
-        
-        Parameters: 
-        element: xml element
-        attrs: tuple of attributes
+    """
+    Returns the list of necessary attributes
+    
+    Parameters: 
+    element: xml element
+    attrs: tuple of attributes
 
-        Return: a dictionary of elements
-        """
-        
-        result = {}
-        for attr in attrs:
-                result[attr] = xml_element.getAttribute(attr)   
-        return result
+    Return: a dictionary of elements
+    """
+    
+    result = {}
+    for attr in attrs:
+        result[attr] = xml_element.getAttribute(attr)   
+    return result
