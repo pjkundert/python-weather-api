@@ -60,9 +60,7 @@ def get_weather_from_google(location_id, hl = ''):
     data_structure = { 
         'forecast_information': ('city', 'postal_code', 'latitude_e6', 'longitude_e6', 'forecast_date', 'current_date_time', 'unit_system'),
         'current_conditions': ('condition','temp_f', 'temp_c', 'humidity', 'wind_condition', 'icon')
-    }       
-    
-    forecast_conditions_structure = ('day_of_week', 'low', 'high', 'icon', 'condition')
+    }           
     for (tag, list_of_tags2) in data_structure.iteritems():
         tmp_conditions = {}
         for tag2 in list_of_tags2:
@@ -70,8 +68,8 @@ def get_weather_from_google(location_id, hl = ''):
         weather_data[tag] = tmp_conditions
 
     forecast_conditions = ('day_of_week', 'low', 'high', 'icon', 'condition')
-
     forecasts = []
+    
     for forecast in dom.getElementsByTagName('forecast_conditions'):
         tmp_forecast = {}
         for tag in forecast_conditions:
