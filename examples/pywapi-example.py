@@ -1,9 +1,9 @@
-from  pywapi import *
+import  pywapi
 import string
 
-google_result = google.get_weather('10001')
-yahoo_result = yahoo.get_weather('10001')
-noaa_result = noaa.get_weather('KJFK')
+google_result = pywapi.get_weather_from_google('10001')
+yahoo_result = pywapi.get_weather_from_yahoo('10001')
+noaa_result = pywapi.get_weather_from_noaa('KJFK')
 
 print "Google says: It is " + string.lower(google_result['current_conditions']['condition']) + " and " + google_result['current_conditions']['temp_c'] + "C now in New York.\n\n"
 
