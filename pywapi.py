@@ -28,6 +28,13 @@ Fetches weather reports from Google Weather, Yahoo Wheather and NOAA
 import urllib2
 from xml.dom import minidom
 
+GOOGLE_WEATHER_URL = 'http://www.google.com/ig/api?weather=%s&hl=%s'
+
+YAHOO_WEATHER_URL = 'http://xml.weather.yahoo.com/forecastrss?p=%s&u=%s'
+YAHOO_WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
+
+NOAA_ WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
+
 def get_weather_from_google(location_id, hl = ''):
         """
         Fetches weather report from Google
@@ -40,8 +47,7 @@ def get_weather_from_google(location_id, hl = ''):
           weather_data: a dictionary of weather data. 
         """
 
-        WEATHER_URL = 'http://www.google.com/ig/api?weather=%s&hl=%s'
-        url = WEATHER_URL % (location_id, hl)
+        url = GOOGLE_WEATHER_URL % (location_id, hl)
         handler = urllib2.urlopen(url)
         dom = minidom.parse(handler)    
         handler.close()
@@ -93,13 +99,11 @@ Returns:
 weather_data: a dictionary of weather data. See  http://developer.yahoo.com/weather/#channel
         """
 
-        WEATHER_URL = 'http://xml.weather.yahoo.com/forecastrss?p=%s&u=%s'
-        WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
         if units == 'metric':
                 unit = 'c'
         else:
                  unit = 'f'
-        url = WEATHER_URL % (location_id, unit)
+        url = YAHOO_WEATHER_URL % (location_id, unit)
         handler = urllib2.urlopen(url)
         dom = minidom.parse(handler)    
         handler.close()
@@ -119,7 +123,7 @@ weather_data: a dictionary of weather data. See  http://developer.yahoo.com/weat
         }       
         
         for (tag, attrs) in ns_data_structure.iteritems():
-                weather_data[tag] = xml_get_ns_yahoo_tag(dom, WEATHER_NS, tag, attrs)
+                weather_data[tag] = xml_get_ns_yahoo_tag(dom, YAHOO_WEATHER_NS, tag, attrs)
 
         weather_data['geo'] = {}
         weather_data['geo']['lat'] = dom.getElementsByTagName('geo:lat')[0].firstChild.data
@@ -129,7 +133,7 @@ weather_data: a dictionary of weather data. See  http://developer.yahoo.com/weat
         weather_data['html_description'] = dom.getElementsByTagName('item')[0].getElementsByTagName('description')[0].firstChild.data
         
         forecasts = []
-        for forecast in dom.getElementsByTagNameNS(WEATHER_NS, 'forecast'):
+        for forecast in dom.getElementsByTagNameNS(YAHOO_WEATHER_NS, 'forecast'):
                 forecasts.append(xml_get_attrs(forecast,('date', 'low', 'high', 'text', 'code')))
         weather_data['forecasts'] = forecasts
         
@@ -159,8 +163,7 @@ weather_data: a dictionary of weather data.
 (useful icons: http://www.weather.gov/xml/current_obs/weather.php)
         """
 
-        WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
-        url = WEATHER_URL % (station_id)
+        url = NOAA_WEATHER_URL % (station_id)
         handler = urllib2.urlopen(url)
         dom = minidom.parse(handler)    
         handler.close()
@@ -208,19 +211,19 @@ weather_data: a dictionary of weather data.
         return weather_data
 	
 	
-def xml_get_ns_yahoo_tag(dom, WEATHER_NS, tag, attrs):
+def xml_get_ns_yahoo_tag(dom, YAHOO_WEATHER_NS, tag, attrs):
         """
         Parses the necessary tag and returns the dictionary with values
         
         Parameters:
         dom - DOM
-        WEATHER_NS - namespace
+        YAHOO_WEATHER_NS - namespace
         tag - necessary tag
         attrs - tuple of attributes
 
         Returns: a dictionary of elements 
         """
-        element = dom.getElementsByTagNameNS(WEATHER_NS, tag)[0]
+        element = dom.getElementsByTagNameNS(YAHOO_WEATHER_NS, tag)[0]
         return xml_get_attrs(element,attrs)
 
 
