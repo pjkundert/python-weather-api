@@ -12,4 +12,4 @@ print "Yahoo says: It is " + string.lower(yahoo_result['condition']['text']) + "
 
 print "NOAA says: It is " + string.lower(noaa_result['weather']) + " and " + noaa_result['temp_c'] + "C now in New York."
 
-print "GisMeteo says: It is from" + gismeteo_result['forecasts'][0]['temperature']['min'] + "C to " + gismeteo_result['forecasts'][0]['temperature']['max'] + "C now in New York." 
+print "GisMeteo says: It is from " + gismeteo_result['forecasts'][0]['temperature']['min'] + "C to " + gismeteo_result['forecasts'][0]['temperature']['max'] + "C now in New York." 

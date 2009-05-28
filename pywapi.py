@@ -245,8 +245,7 @@ def get_weather_from_gismeteo(location_id):
     
     weather_data = {}
 
-    for attrs in town_tag_attr:
-        weather_data['town'] = xml_get_attrs(dom.getElementsByTagName('TOWN')[0], attrs)
+    weather_data['town'] = xml_get_attrs(dom.getElementsByTagName('TOWN')[0], town_tag_attr)
 
     forecasts = []
     xml_forecats_node  = dom.getElementsByTagName('FORECAST')
