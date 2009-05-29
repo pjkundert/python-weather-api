@@ -13,7 +13,6 @@ setup(name='pywapi',
     author_email='qetzal@gmail.com',
     url='http://code.google.com/p/python-weather-api/',
     py_modules=['pywapi'],
+    license='MIT',
     keywords = 'weather api yahoo noaa google gismeteo',
-    data_files = [('', ['CHANGELOG', 'README', 'LICENSE']),
-        ('', ['examples/*'])],    
 )
