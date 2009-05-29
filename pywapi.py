@@ -46,7 +46,7 @@ def get_weather_from_google(location_id, hl = ''):
       hl: the language parameter (language code)
 
     Returns:
-      weather_data: a dictionary of weather data. 
+      weather_data: a dictionary of weather data that exists in XML feed. 
     """
 
     url = GOOGLE_WEATHER_URL % (location_id, hl)
@@ -96,7 +96,7 @@ def get_weather_from_yahoo(location_id, units = 'metric'):
     Note that choosing metric units changes all the weather units to metric, for example, wind speed will be reported as kilometers per hour and barometric pressure as millibars.
  
     Returns:
-    weather_data: a dictionary of weather data. See  http://developer.yahoo.com/weather/#channel
+    weather_data: a dictionary of weather data that exists in XML feed. See  http://developer.yahoo.com/weather/#channel
     """
 
     if units == 'metric':
@@ -147,7 +147,8 @@ def get_weather_from_noaa(station_id):
     Fetches weather report from NOAA: National Oceanic and Atmospheric Administration (United States)
 
     Parameter:
-    station_id: To find your station ID, perform the following steps:
+    station_id: the ID of the weather station near the necessary location
+    To find your station ID, perform the following steps:
     1. Open this URL: http://www.weather.gov/xml/current_obs/seek.php?state=az&Find=Find
     2. Select the necessary state state. Click 'Find'.
     3. Find the necessary station in the 'Observation Location' column.
@@ -157,7 +158,7 @@ def get_weather_from_noaa(station_id):
     Other way to get the station ID: use this library: http://code.google.com/p/python-weather/ and 'Weather.location2station' function.
 
     Returns:
-    weather_data: a dictionary of weather data. 
+    weather_data: a dictionary of weather data that exists in XML feed. 
 
     (useful icons: http://www.weather.gov/xml/current_obs/weather.php)
     """
@@ -224,7 +225,7 @@ def get_weather_from_gismeteo(location_id):
     http://informer.gismeteo.ru/xml/72503_1.xml. The location ID is 72503_1.
 
     Returns:
-    weather_data: a dictionary of weather data(forecasts only, not current weather). See http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (at the page bottom) 
+    weather_data: a dictionary of weather data(forecasts only, not current weather) that exists in XML feed. See http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (at the page bottom) 
     """
     
     url = GISMETEO_WEATHER_URL % (location_id)
