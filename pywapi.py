@@ -224,7 +224,7 @@ def get_weather_from_gismeteo(location_id):
     http://informer.gismeteo.ru/xml/72503_1.xml. The location ID is 72503_1.
 
     Returns:
-    weather_data: a dictionary of weather data. See http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (at the page bottom) 
+    weather_data: a dictionary of weather data(forecasts only, not current weather). See http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (at the page bottom) 
     """
     
     url = GISMETEO_WEATHER_URL % (location_id)
