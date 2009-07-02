@@ -206,7 +206,10 @@ def get_weather_from_noaa(station_id):
     weather_data = {}
     current_observation = dom.getElementsByTagName('current_observation')[0]
     for tag in data_structure:
-        weather_data[tag] = current_observation.getElementsByTagName(tag)[0].firstChild.data
+        try:
+            weather_data[tag] = current_observation.getElementsByTagName(tag)[0].firstChild.data
+        except IndexError:
+            pass
 
     dom.unlink()
     return weather_data
