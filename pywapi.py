@@ -35,8 +35,6 @@ YAHOO_WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
 
 NOAA_WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
 
-GISMETEO_WEATHER_URL = 'http://informer.gismeteo.ru/xml/%s.xml'
-
 def get_weather_from_google(location_id, hl = ''):
     """
     Fetches weather report from Google
@@ -212,59 +210,6 @@ def get_weather_from_noaa(station_id):
             pass
 
     dom.unlink()
-    return weather_data
-    
-
-
-def get_weather_from_gismeteo(location_id):
-    """
-    Fetches weather report from GisMeteo (russian weather service)
-
-    Parameters
-    location_id: A location ID of the necessary place. To find your location ID,
-    browse or search for your city from the Gismeteo page: http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (the page is in Russian)
-    The location ID is in the URL for the XML URL for that city. 
-    For example, if you search for New York on the GisMeteo page, the XML URLfor that city is 
-    http://informer.gismeteo.ru/xml/72503_1.xml. The location ID is 72503_1.
-
-    Returns:
-    weather_data: a dictionary of weather data(forecasts only, not current weather) that exists in XML feed. See http://informer.gismeteo.ru/xml.html?index=27612%CC%EE%F1%EA%E2%E0&&lang=ru (at the page bottom) 
-    """
-    
-    url = GISMETEO_WEATHER_URL % (location_id)
-    handler = urllib2.urlopen(url)
-    dom = minidom.parse(handler)
-    handler.close()
-    
-    forecast_data_structure = {
-        'PHENOMENA': ('cloudiness','precipitation', 'rpower', 'spower'),
-        'PRESSURE': ('max','min'),
-        'TEMPERATURE': ('max','min'),
-        'WIND': ('max','min', 'direction'),
-        'RELWET': ('max','min'),
-        'HEAT': ('max','min'),
-            }
-    town_tag_attr = ('index', 'sname', 'latitude','longitude')
-    forecast_tag_attr = ('day', 'month', 'year', 'hour', 'tod', 'predict', 'weekday')
-    
-    weather_data = {}
-
-    weather_data['town'] = xml_get_attrs(dom.getElementsByTagName('TOWN')[0], town_tag_attr)
-
-    forecasts = []
-    xml_forecats_node  = dom.getElementsByTagName('FORECAST')
-
-    for i in range(xml_forecats_node.length):
-        forecast = xml_forecats_node.item(i)
-        _tmp_forecast = {}
-        _tmp_forecast.update(xml_get_attrs(forecast, forecast_tag_attr))                
-        for (tag, attrs) in forecast_data_structure.iteritems():
-            _tmp_forecast[string.lower(tag)] = xml_get_attrs(forecast.getElementsByTagName(tag)[0], attrs)
-        forecasts.append(_tmp_forecast)
-
-    dom.unlink()
-    weather_data['forecasts'] = forecasts
-
     return weather_data
 
 
