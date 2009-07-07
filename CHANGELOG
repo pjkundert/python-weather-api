@@ -1,3 +1,7 @@
+v0.2.1
++ GisMeteo service was removed. It doesn't provide XML feeds anymore.
+! IndexError issue was fixed. Thank you, Dr. Drang.
+
 v0.2 (29 May 2009)
 + Added support of NOAA XML feeds
 + Added support of GisMeteo XML feeds
