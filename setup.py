@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 __author__ = 'qetzal@gmail.com'
-__version__ = '0.2'
+__version__ = '0.2.1'
 
 
 setup(name='pywapi',
@@ -14,5 +14,5 @@ setup(name='pywapi',
     url='http://code.google.com/p/python-weather-api/',
     py_modules=['pywapi'],
     license='MIT',
-    keywords = 'weather api yahoo noaa google gismeteo',
+    keywords = 'weather api yahoo noaa google',
 )
