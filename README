@@ -10,7 +10,7 @@ Author: Eugene Kaznacheev <qetzal@gmail.com>
 
 ==From source ==
 
-Download the latest pywapi library from: http://python-weather-api.googlecode.com/files/pywapi-0.2.0.tar.gz
+Download the latest pywapi library from: http://code.google.com/p/python-weather-api/
 
 
 Untar the source distribution and run: 
