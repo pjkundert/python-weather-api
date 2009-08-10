@@ -1,3 +1,6 @@
+v0.2.2
+! get_weather_from_google() now supports non-English languages. Thank you, Shinysky.
+
 v0.2.1 (07 July 2009)
 + GisMeteo service was removed. It doesn't provide XML feeds anymore.
 ! IndexError issue was fixed. Thank you, Dr. Drang.

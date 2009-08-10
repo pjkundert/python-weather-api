@@ -25,7 +25,7 @@
 Fetches weather reports from Google Weather, Yahoo Wheather and NOAA
 """
 
-import urllib2, string
+import urllib2, string, re
 from xml.dom import minidom
 
 GOOGLE_WEATHER_URL = 'http://www.google.com/ig/api?weather=%s&hl=%s'
@@ -41,7 +41,7 @@ def get_weather_from_google(location_id, hl = ''):
 
     Parameters 
       location_id: a zip code (10001); city name, state (weather=woodland,PA); city name, country (weather=london,england); or possibly others.
-      hl: the language parameter (language code)
+      hl: the language parameter (language code). Default value is empty string, in this case Google will use English.
 
     Returns:
       weather_data: a dictionary of weather data that exists in XML feed. 
@@ -49,7 +49,15 @@ def get_weather_from_google(location_id, hl = ''):
 
     url = GOOGLE_WEATHER_URL % (location_id, hl)
     handler = urllib2.urlopen(url)
-    dom = minidom.parse(handler)    
+    content_type = handler.info().dict['content-type']
+    charset = re.search('charset\=(.*)',content_type).group(1)
+    if not charset:
+        charset = 'utf-8'
+    if charset.lower() != 'utf-8':
+        xml_response = handler.read().decode(charset).encode('utf-8')
+    else:
+        xml_response = handler.read()
+    dom = minidom.parseString(xml_response)    
     handler.close()
 
     weather_data = {}
