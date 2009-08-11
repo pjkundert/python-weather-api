@@ -1,4 +1,5 @@
 v0.2.2
+! Small corrections to fix some pychecker's warnings.
 ! get_weather_from_google() now supports non-English languages. Thank you, Shinysky.
 
 v0.2.1 (07 July 2009)

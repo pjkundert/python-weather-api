@@ -25,7 +25,7 @@
 Fetches weather reports from Google Weather, Yahoo Wheather and NOAA
 """
 
-import urllib2, string, re
+import urllib2, re
 from xml.dom import minidom
 
 GOOGLE_WEATHER_URL = 'http://www.google.com/ig/api?weather=%s&hl=%s'
@@ -222,19 +222,19 @@ def get_weather_from_noaa(station_id):
 
 
     
-def xml_get_ns_yahoo_tag(dom, YAHOO_WEATHER_NS, tag, attrs):
+def xml_get_ns_yahoo_tag(dom, ns, tag, attrs):
     """
     Parses the necessary tag and returns the dictionary with values
     
     Parameters:
     dom - DOM
-    YAHOO_WEATHER_NS - namespace
+    ns - namespace
     tag - necessary tag
     attrs - tuple of attributes
 
     Returns: a dictionary of elements 
     """
-    element = dom.getElementsByTagNameNS(YAHOO_WEATHER_NS, tag)[0]
+    element = dom.getElementsByTagNameNS(ns, tag)[0]
     return xml_get_attrs(element,attrs)
 
 
