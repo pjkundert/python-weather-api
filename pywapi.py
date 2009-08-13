@@ -96,8 +96,8 @@ def get_countries_from_google(hl = ''):
     Parameters
       hl: the language parameter (language code). Default value is empty string, in this case Google will use English.
     Returns:
-      countries: a list of element(all countries that exists in XML feed). Each element is a dictionary with 'name' and 'iso_code' keys. 
-      For example: 
+      countries: a list of elements(all countries that exists in XML feed). Each element is a dictionary with 'name' and 'iso_code' keys. 
+      For example: [{'iso_code': 'US', 'name': 'USA'}, {'iso_code': 'FR', 'name': 'France'}]
     """
     url = GOOGLE_COUNTRIES_URL % hl
     
@@ -125,8 +125,43 @@ def get_countries_from_google(hl = ''):
     dom.unlink()
     return countries
 
-def get_cities_from_google():
-    pass
+def get_cities_from_google(country_code, hl = ''):
+    """
+    Get list of cities of necessary country in specified language from Google
+    
+    Parameters
+      country_code: code of the necessary country. For example 'de' or 'fr'.
+      hl: the language parameter (language code). Default value is empty string, in this case Google will use English.
+    Returns:
+      cities: a list of elements(all cities that exists in XML feed). Each element is a dictionary with 'name', 'latitude_e6' and 'longitude_e6' keys. For example: [{'longitude_e6': '1750000', 'name': 'Bourges', 'latitude_e6': '47979999'}]
+    """
+    url = GOOGLE_CITIES_URL % (country_code.lower(), hl)
+    
+    handler = urllib2.urlopen(url)
+    content_type = handler.info().dict['content-type']
+    charset = re.search('charset\=(.*)',content_type).group(1)
+    if not charset:
+        charset = 'utf-8'
+    if charset.lower() != 'utf-8':
+        xml_response = handler.read().decode(charset).encode('utf-8')
+    else:
+        xml_response = handler.read()
+    dom = minidom.parseString(xml_response)
+    handler.close()
+
+    cities = []
+    cities_dom = dom.getElementsByTagName('cities')
+    
+    for city_dom in cities_dom:
+        city = {}
+        city['name'] = city_dom.getElementsByTagName('name')[0].getAttribute('data')
+        city['latitude_e6'] = country_dom.getElementsByTagName('latitude_e6')[0].getAttribute('data')
+        city['longitude_e6'] = country_dom.getElementsByTagName('longitude_e6')[0].getAttribute('data')
+        cities.append(city)
+    
+    dom.unlink()
+    
+    return cities
 
 def get_weather_from_yahoo(location_id, units = 'metric'):
     """
