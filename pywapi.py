@@ -150,13 +150,13 @@ def get_cities_from_google(country_code, hl = ''):
     handler.close()
 
     cities = []
-    cities_dom = dom.getElementsByTagName('cities')
+    cities_dom = dom.getElementsByTagName('city')
     
     for city_dom in cities_dom:
         city = {}
         city['name'] = city_dom.getElementsByTagName('name')[0].getAttribute('data')
-        city['latitude_e6'] = country_dom.getElementsByTagName('latitude_e6')[0].getAttribute('data')
-        city['longitude_e6'] = country_dom.getElementsByTagName('longitude_e6')[0].getAttribute('data')
+        city['latitude_e6'] = city_dom.getElementsByTagName('latitude_e6')[0].getAttribute('data')
+        city['longitude_e6'] = city_dom.getElementsByTagName('longitude_e6')[0].getAttribute('data')
         cities.append(city)
     
     dom.unlink()
