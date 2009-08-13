@@ -42,7 +42,8 @@ def get_weather_from_google(location_id, hl = ''):
     Fetches weather report from Google
 
     Parameters 
-      location_id: a zip code (10001); city name, state (weather=woodland,PA); city name, country (weather=london,england); or possibly others.
+      location_id: a zip code (10001); city name, state (weather=woodland,PA); city name, country (weather=london,england);
+      latitude/longitude(weather=,,,30670000,104019996) or possibly other.
       hl: the language parameter (language code). Default value is empty string, in this case Google will use English.
 
     Returns:
