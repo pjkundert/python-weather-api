@@ -1,4 +1,5 @@
 v0.2.2
++ Ability to get countries and cities lists from Google was added.
 ! Small corrections to fix some pychecker's warnings.
 ! get_weather_from_google() now supports non-English languages. Thank you, Shinysky.
 
