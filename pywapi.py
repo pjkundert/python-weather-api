@@ -28,12 +28,14 @@ Fetches weather reports from Google Weather, Yahoo Wheather and NOAA
 import urllib2, re
 from xml.dom import minidom
 
-GOOGLE_WEATHER_URL = 'http://www.google.com/ig/api?weather=%s&hl=%s'
+GOOGLE_WEATHER_URL   = 'http://www.google.com/ig/api?weather=%s&hl=%s'
+GOOGLE_COUNTRIES_URL = 'http://www.google.com/ig/countries?output=xml&hl=%s'
+GOOGLE_CITIES_URL    = 'http://www.google.com/ig/cities?output=xml&country=%s&hl=%s'
 
-YAHOO_WEATHER_URL = 'http://xml.weather.yahoo.com/forecastrss?p=%s&u=%s'
-YAHOO_WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
+YAHOO_WEATHER_URL    = 'http://xml.weather.yahoo.com/forecastrss?p=%s&u=%s'
+YAHOO_WEATHER_NS     = 'http://xml.weather.yahoo.com/ns/rss/1.0'
 
-NOAA_WEATHER_URL = 'http://www.weather.gov/xml/current_obs/%s.xml'
+NOAA_WEATHER_URL     = 'http://www.weather.gov/xml/current_obs/%s.xml'
 
 def get_weather_from_google(location_id, hl = ''):
     """
@@ -82,12 +84,49 @@ def get_weather_from_google(location_id, hl = ''):
             tmp_forecast[tag] = forecast.getElementsByTagName(tag)[0].getAttribute('data')
         forecasts.append(tmp_forecast)
 
-    weather_data['forecasts'] = forecasts    
+    weather_data['forecasts'] = forecasts
     dom.unlink()
 
     return weather_data
     
+def get_countries_from_google(hl = ''):
+    """
+    Get list of countries in specified language from Google
+    
+    Parameters
+      hl: the language parameter (language code). Default value is empty string, in this case Google will use English.
+    Returns:
+      countries: a list of element(all countries that exists in XML feed). Each element is a dictionary with 'name' and 'iso_code' keys. 
+      For example: 
+    """
+    url = GOOGLE_COUNTRIES_URL % hl
+    
+    handler = urllib2.urlopen(url)
+    content_type = handler.info().dict['content-type']
+    charset = re.search('charset\=(.*)',content_type).group(1)
+    if not charset:
+        charset = 'utf-8'
+    if charset.lower() != 'utf-8':
+        xml_response = handler.read().decode(charset).encode('utf-8')
+    else:
+        xml_response = handler.read()
+    dom = minidom.parseString(xml_response)
+    handler.close()
 
+    countries = []
+    countries_dom = dom.getElementsByTagName('country')
+    
+    for country_dom in countries_dom:
+        country = {}
+        country['name'] = country_dom.getElementsByTagName('name')[0].getAttribute('data')
+        country['iso_code'] = country_dom.getElementsByTagName('iso_code')[0].getAttribute('data')
+        countries.append(country)
+    
+    dom.unlink()
+    return countries
+
+def get_cities_from_google():
+    pass
 
 def get_weather_from_yahoo(location_id, units = 'metric'):
     """
