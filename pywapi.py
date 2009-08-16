@@ -22,7 +22,7 @@
 #OTHER DEALINGS IN THE SOFTWARE.
 
 """
-Fetches weather reports from Google Weather, Yahoo Wheather, NOAA and GisMeteo
+Fetches weather reports from Google Weather, Yahoo Wheather and NOAA
 """
 
 import urllib2, re
