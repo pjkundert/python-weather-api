@@ -2,6 +2,7 @@ v0.2.2
 + Ability to get countries and cities lists from Google was added.
 ! Small corrections to fix some pychecker's warnings.
 ! get_weather_from_google() now supports non-English languages. Thank you, Shinysky.
+! "400: Bad Request" error was fixed. It appeared when Google API is used and location contains special characters(for example spaces). Thank you, Dan.y.tang.
 
 v0.2.1 (07 July 2009)
 + GisMeteo service was removed. It doesn't provide XML feeds anymore.

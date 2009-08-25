@@ -27,6 +27,7 @@ Fetches weather reports from Google Weather, Yahoo Wheather and NOAA
 
 import urllib2, re
 from xml.dom import minidom
+from urllib import quote
 
 GOOGLE_WEATHER_URL   = 'http://www.google.com/ig/api?weather=%s&hl=%s'
 GOOGLE_COUNTRIES_URL = 'http://www.google.com/ig/countries?output=xml&hl=%s'
@@ -42,14 +43,14 @@ def get_weather_from_google(location_id, hl = ''):
     Fetches weather report from Google
 
     Parameters 
-      location_id: a zip code (10001); city name, state (weather=woodland,PA); city name, country (weather=london,england);
+      location_id: a zip code (10001); city name, state (weather=woodland,PA); city name, country (weather=london, england);
       latitude/longitude(weather=,,,30670000,104019996) or possibly other.
       hl: the language parameter (language code). Default value is empty string, in this case Google will use English.
 
     Returns:
       weather_data: a dictionary of weather data that exists in XML feed. 
     """
-
+    location_id, hl = map(quote, (location_id, hl))
     url = GOOGLE_WEATHER_URL % (location_id, hl)
     handler = urllib2.urlopen(url)
     content_type = handler.info().dict['content-type']
@@ -73,7 +74,10 @@ def get_weather_from_google(location_id, hl = ''):
     for (tag, list_of_tags2) in data_structure.iteritems():
         tmp_conditions = {}
         for tag2 in list_of_tags2:
-            tmp_conditions[tag2] =  weather_dom.getElementsByTagName(tag)[0].getElementsByTagName(tag2)[0].getAttribute('data')
+            try: 
+                tmp_conditions[tag2] =  weather_dom.getElementsByTagName(tag)[0].getElementsByTagName(tag2)[0].getAttribute('data')
+            except IndexError:
+                pass
         weather_data[tag] = tmp_conditions
 
     forecast_conditions = ('day_of_week', 'low', 'high', 'icon', 'condition')
@@ -179,7 +183,7 @@ def get_weather_from_yahoo(location_id, units = 'metric'):
     Returns:
     weather_data: a dictionary of weather data that exists in XML feed. See  http://developer.yahoo.com/weather/#channel
     """
-
+    location_id = quote(location_id)
     if units == 'metric':
         unit = 'c'
     else:
@@ -243,7 +247,7 @@ def get_weather_from_noaa(station_id):
 
     (useful icons: http://www.weather.gov/xml/current_obs/weather.php)
     """
-
+    station_id = quote(station_id)
     url = NOAA_WEATHER_URL % (station_id)
     handler = urllib2.urlopen(url)
     dom = minidom.parse(handler)    
