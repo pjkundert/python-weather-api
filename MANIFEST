@@ -5,7 +5,7 @@ examples/pywapi-example.py
 examples/pywapi-google-example.py
 examples/pywapi-yahoo-example.py
 examples/pywapi-noaa-example.py
-examples/pywapy-cities-example.py
-examples/pywapy-countries-example.py
+examples/pywapi-cities-example.py
+examples/pywapi-countries-example.py
 pywapi.py
 setup.py
