@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import pywapi
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
