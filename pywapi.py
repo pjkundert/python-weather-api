@@ -25,9 +25,11 @@
 Fetches weather reports from Google Weather, Yahoo Wheather and NOAA
 """
 
-import urllib2, re
+import sys
+import urllib.request, urllib.error, urllib.parse
+import re
 from xml.dom import minidom
-from urllib import quote
+from urllib.parse import quote
 
 GOOGLE_WEATHER_URL   = 'http://www.google.com/ig/api?weather=%s&hl=%s'
 GOOGLE_COUNTRIES_URL = 'http://www.google.com/ig/countries?output=xml&hl=%s'
@@ -50,10 +52,10 @@ def get_weather_from_google(location_id, hl = ''):
     Returns:
       weather_data: a dictionary of weather data that exists in XML feed. 
     """
-    location_id, hl = map(quote, (location_id, hl))
+    location_id, hl = list(map(quote, (location_id, hl)))
     url = GOOGLE_WEATHER_URL % (location_id, hl)
-    handler = urllib2.urlopen(url)
-    content_type = handler.info().dict['content-type']
+    handler = urllib.request.urlopen(url)
+    content_type = dict(handler.getheaders())['Content-Type']
     charset = re.search('charset\=(.*)',content_type).group(1)
     if not charset:
         charset = 'utf-8'
@@ -61,8 +63,8 @@ def get_weather_from_google(location_id, hl = ''):
         xml_response = handler.read().decode(charset).encode('utf-8')
     else:
         xml_response = handler.read()
-    dom = minidom.parseString(xml_response)    
     handler.close()
+    dom = minidom.parseString(xml_response)    
 
     weather_data = {}
     weather_dom = dom.getElementsByTagName('weather')[0]
@@ -71,7 +73,7 @@ def get_weather_from_google(location_id, hl = ''):
         'forecast_information': ('city', 'postal_code', 'latitude_e6', 'longitude_e6', 'forecast_date', 'current_date_time', 'unit_system'),
         'current_conditions': ('condition','temp_f', 'temp_c', 'humidity', 'wind_condition', 'icon')
     }           
-    for (tag, list_of_tags2) in data_structure.iteritems():
+    for (tag, list_of_tags2) in data_structure.items():
         tmp_conditions = {}
         for tag2 in list_of_tags2:
             try: 
@@ -106,8 +108,8 @@ def get_countries_from_google(hl = ''):
     """
     url = GOOGLE_COUNTRIES_URL % hl
     
-    handler = urllib2.urlopen(url)
-    content_type = handler.info().dict['content-type']
+    handler = urllib.request.urlopen(url)
+    content_type = dict(handler.getheaders())['Content-Type']
     charset = re.search('charset\=(.*)',content_type).group(1)
     if not charset:
         charset = 'utf-8'
@@ -142,8 +144,11 @@ def get_cities_from_google(country_code, hl = ''):
     """
     url = GOOGLE_CITIES_URL % (country_code.lower(), hl)
     
-    handler = urllib2.urlopen(url)
-    content_type = handler.info().dict['content-type']
+    try:
+        handler = urllib.request.urlopen(url)
+    except urllib.error.URLError:
+        sys.exit(1)
+    content_type = dict(handler.getheaders())['Content-Type']
     charset = re.search('charset\=(.*)',content_type).group(1)
     if not charset:
         charset = 'utf-8'
@@ -167,6 +172,17 @@ def get_cities_from_google(country_code, hl = ''):
     dom.unlink()
     
     return cities
+    
+def get_everything_from_google(country_code, hl=''):
+    """ Get all weather data from google for a specific country. """
+    
+    cities = get_cities_from_google(country_code, '')
+    
+    weather_reports = {}
+    for city in cities:
+        weather_reports[city['name']] = get_weather_from_google(city['name'], hl)
+        
+    return weather_reports
 
 def get_weather_from_yahoo(location_id, units = 'metric'):
     """
@@ -189,7 +205,7 @@ def get_weather_from_yahoo(location_id, units = 'metric'):
     else:
         unit = 'f'
     url = YAHOO_WEATHER_URL % (location_id, unit)
-    handler = urllib2.urlopen(url)
+    handler = urllib.request.urlopen(url)
     dom = minidom.parse(handler)    
     handler.close()
         
@@ -206,7 +222,7 @@ def get_weather_from_yahoo(location_id, units = 'metric'):
         'condition': ('text', 'code', 'temp', 'date')
     }       
     
-    for (tag, attrs) in ns_data_structure.iteritems():
+    for (tag, attrs) in ns_data_structure.items():
         weather_data[tag] = xml_get_ns_yahoo_tag(dom, YAHOO_WEATHER_NS, tag, attrs)
 
     weather_data['geo'] = {}
@@ -224,7 +240,26 @@ def get_weather_from_yahoo(location_id, units = 'metric'):
     dom.unlink()
 
     return weather_data
+    
+def get_everything_from_yahoo(country_code, cities):
+    """ Get all weather data from yahoo for a specific country. """
+    
+    city_codes = yield_all_country_city_codes_yahoo(country_code, cities)
+    
+    weather_reports = {}
+    for city_c in city_codes:
+        weather_data = get_weather_from_yahoo(city_c)
+        city = weather_data['location']['city']
+        weather_reports[city] = weather_data
+        
+    return weather_reports
 
+def yield_all_country_city_codes_yahoo(country_code, cities):
+    """ Yield all cities codes for a specific country. """
+    
+    # cities stands for the number of available cities
+    for i in range(1, cities + 1):
+        yield ''.join([country_code, (4 - len(str(i))) * '0', str(i)])
     
     
 def get_weather_from_noaa(station_id):
@@ -249,7 +284,7 @@ def get_weather_from_noaa(station_id):
     """
     station_id = quote(station_id)
     url = NOAA_WEATHER_URL % (station_id)
-    handler = urllib2.urlopen(url)
+    handler = urllib.request.urlopen(url)
     dom = minidom.parse(handler)    
     handler.close()
         
@@ -332,3 +367,65 @@ def xml_get_attrs(xml_element, attrs):
     for attr in attrs:
         result[attr] = xml_element.getAttribute(attr)   
     return result
+
+def wind_direction(degrees):
+    """ Convert wind degrees to direction """
+
+    try:
+        degrees = int(degrees)
+    except ValueError:
+        return ''
+    
+    if degrees < 23 or degrees >= 338:
+        return 'N'
+    elif degrees < 68:
+        return 'NE'
+    elif degrees < 113:
+        return 'E'
+    elif degrees < 158:
+        return 'SE'
+    elif degrees < 203:
+        return 'S'
+    elif degrees < 248:
+        return 'SW'
+    elif degrees < 293:
+        return 'W'
+    elif degrees < 338:
+        return 'NW'
+        
+def wind_beaufort_scale(km_per_hour):
+    """ Convert km/h to beaufort """
+    
+    try:
+        km_per_hour = int(km_per_hour)
+    except ValueError:
+        return ''
+    
+    if km_per_hour < 1:
+        return '0'
+    elif km_per_hour <= 5.5:
+        return '1'
+    elif km_per_hour <= 11:
+        return '2'
+    elif km_per_hour <= 19:
+        return '3'
+    elif km_per_hour <= 28:
+        return '4'
+    elif km_per_hour <= 38:
+        return '5'
+    elif km_per_hour <= 49:
+        return '6'
+    elif km_per_hour <= 61:
+        return '7'
+    elif km_per_hour <= 74:
+        return '8'
+    elif km_per_hour <= 88:
+        return '9'
+    elif km_per_hour <= 102:
+        return '10'
+    elif km_per_hour <= 117:
+        return '11'
+    else:
+        return '12'
+
+    
