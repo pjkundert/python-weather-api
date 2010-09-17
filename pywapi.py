@@ -40,6 +40,56 @@ YAHOO_WEATHER_NS     = 'http://xml.weather.yahoo.com/ns/rss/1.0'
 
 NOAA_WEATHER_URL     = 'http://www.weather.gov/xml/current_obs/%s.xml'
 
+WEATHER_COM_URL     = 'http://xoap.weather.com/weather/local/%s?par=1138276742&key=15ee9c789ccd70f5&dayf=5'
+
+def get_weather_from_weather_com(location_id, units='M'):
+    url = WEATHER_COM_URL % (location_id)
+    if units == "M":
+        url = url + '&unit=m'
+    handler = urllib.request.urlopen(url)
+    content_type = dict(handler.getheaders())['Content-Type']
+    charset = re.search('charset\=(.*)',content_type).group(1)
+    if not charset:
+        charset = 'utf-8'
+    if charset.lower() != 'utf-8':
+        xml_response = handler.read().decode(charset).encode('utf-8')
+    else:
+        xml_response = handler.read()
+    dom = minidom.parseString(xml_response)    
+    handler.close()
+    
+    day_parts = ['day', 'night']
+    forecasts = []  
+    
+    weather_data = {}
+    weather_dom = dom.getElementsByTagName('weather')[0]
+    day_doms = weather_dom.getElementsByTagName('dayf')[0].getElementsByTagName('day')
+        
+    for day_dom in day_doms:
+        tmp_forecast = {}
+        tmp_forecast['high'] = getText(day_dom.getElementsByTagName('hi')[0].childNodes)
+        tmp_forecast['low'] = getText(day_dom.getElementsByTagName('low')[0].childNodes)
+        tmp_forecast['day_of_week'] = day_dom.getAttribute('t')
+        tmp_forecast['date'] = day_dom.getAttribute('dt')
+        for i in range(0,len(day_parts)):
+            tmp_forecast[day_parts[i]] = {}
+            part_dom = day_dom.getElementsByTagName('part')[i]
+            tmp_forecast[day_parts[i]]['condition'] = getText(part_dom.getElementsByTagName('t')[0].childNodes)
+            tmp_forecast[day_parts[i]]['humidity'] = getText(part_dom.getElementsByTagName('hmid')[0].childNodes)
+            tmp_forecast[day_parts[i]]['icon'] = getText(part_dom.getElementsByTagName('icon')[0].childNodes)               
+        forecasts.append(tmp_forecast)
+    
+    weather_data['forecasts'] = forecasts
+    
+    weather_data['forecast_information'] = []
+    info_dom = weather_dom.getElementsByTagName('head')[0]
+    tmp_info = {}
+    tmp_info['unit_system'] = getText(info_dom.getElementsByTagName('ut')[0].childNodes)  
+    weather_data['forecast_information'] = tmp_info
+    
+    return weather_data  
+
+
 def get_weather_from_google(location_id, hl = ''):
     """
     Fetches weather report from Google
@@ -428,4 +478,9 @@ def wind_beaufort_scale(km_per_hour):
     else:
         return '12'
 
-    
+def getText(nodelist):
+    rc = ""
+    for node in nodelist:
+            if node.nodeType == node.TEXT_NODE:
+                    rc = rc + node.data
+    return rc    
